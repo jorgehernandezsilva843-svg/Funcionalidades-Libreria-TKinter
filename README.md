@@ -280,14 +280,13 @@ Sigue estos sencillos pasos para vincular esta carpeta con un repositorio en tu 
 Abre la terminal en la carpeta de este proyecto y ejecuta los siguientes comandos:
 
 ```powershell
-# 1. Vincular la dirección de tu nuevo repositorio en GitHub (reemplaza TU_USUARIO y TU_REPOSITORIO):
-git remote add origin https://github.com/TU_USUARIO/TU_REPOSITORIO.git
+# Clonar este repositorio en cualquier máquina:
+git clone https://github.com/jorgehernandezsilva843-svg/Funcionalidades-Libreria-TKinter.git
 
-# 2. Asegurar que la rama principal se llame 'main':
-git branch -M main
-
-# 3. Subir todos los archivos y el historial:
-git push -u origin main
+# O para subir nuevos cambios tras editar:
+git add .
+git commit -m "nuevos cambios"
+git push
 ```
 
 ¡Listo! Todos los scripts, el lanzador interactivo y este manual `README.md` estarán publicados en tu perfil de GitHub.
