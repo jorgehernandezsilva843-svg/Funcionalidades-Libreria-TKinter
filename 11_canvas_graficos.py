@@ -1,107 +1,131 @@
 """
 11_canvas_graficos.py
 ---------------------
-Demuestra el uso del lienzo gráfico interactivo (tk.Canvas):
-1. Dibujo de formas geométricas vectoriales: líneas, rectángulos, óvalos/círculos, polígonos y texto.
-2. Manipulación de propiedades visuales: colores de relleno (fill), contornos (outline) y grosor (width).
-3. Interactividad: objeto arrastrable con el ratón (Drag and Drop interactivo usando eventos).
+Demuestra el uso del lienzo gráfico interactivo (tk.Canvas) con MANIPULACIÓN TOTAL:
+1. Dibujo de formas vectoriales: rectángulos, círculos, triángulos, estrellas y texto.
+2. Interactividad universal: ¡TODAS las figuras se pueden tocar y arrastrar con el mouse!
+3. Al hacer clic en cualquier figura, pasa al frente visualmente (tag_raise).
+4. Doble clic en cualquier zona vacía crea una nueva forma en esa posición.
 """
 
 import tkinter as tk
+import random
 
 def main():
     root = tk.Tk()
-    root.title("11 - Lienzo Gráfico Interactivo (Canvas)")
-    root.geometry("640x540")
+    root.title("11 - Lienzo Canvas Interactivo (¡Todas las figuras son manipulables!)")
+    root.geometry("700x580")
     root.configure(bg="#F1F5F9")
 
     tk.Label(
         root,
-        text="Lienzo Gráfico (Canvas): Formas Vectoriales e Interactividad",
-        font=("Segoe UI", 14, "bold"),
+        text="Lienzo Gráfico: Manipula y Arrastra CUALQUIER Figura",
+        font=("Segoe UI", 15, "bold"),
         bg="#F1F5F9",
         fg="#0F172A"
-    ).pack(pady=(12, 5))
+    ).pack(pady=(12, 4))
 
     lbl_info = tk.Label(
         root,
-        text="💡 Haz clic y arrastra el círculo verde con el ratón para moverlo",
+        text="🖐️ Haz clic y mantén presionado sobre CUALQUIER figura para moverla por el lienzo",
         font=("Segoe UI", 10, "italic"),
         bg="#F1F5F9",
-        fg="#475569"
+        fg="#2563EB"
     )
-    lbl_info.pack(pady=(0, 8))
+    lbl_info.pack(pady=(0, 6))
 
-    # Crear el Canvas con fondo blanco y borde definido
+    # Lienzo principal
     canvas = tk.Canvas(root, bg="#FFFFFF", bd=2, relief="groove")
     canvas.pack(fill="both", expand=True, padx=20, pady=5)
 
-    # 1. Dibujar figuras estáticas de muestra
-    # Líneas y cuadrícula
-    canvas.create_line(20, 30, 200, 30, fill="#94A3B8", width=3, dash=(4, 2))
-    canvas.create_text(110, 15, text="Línea punteada", font=("Segoe UI", 9), fill="#64748B")
+    # Estado del arrastre
+    drag_data = {"x": 0, "y": 0, "item": None}
 
-    # Rectángulo estilizado
-    canvas.create_rectangle(30, 60, 190, 150, fill="#DBEAFE", outline="#2563EB", width=2)
-    canvas.create_text(110, 105, text="Rectángulo\n(fill + outline)", font=("Segoe UI", 10, "bold"), fill="#1E40AF", justify="center")
+    def al_hacer_click(event):
+        # Detecta qué elemento está debajo del cursor
+        items = canvas.find_withtag("current")
+        if items:
+            item = items[0]
+            # Traer la figura al frente para que no quede detrás de otras al arrastrar
+            canvas.tag_raise(item)
+            drag_data["item"] = item
+            drag_data["x"] = event.x
+            drag_data["y"] = event.y
+            tipo = canvas.type(item)
+            lbl_info.config(text=f"Moviendo figura: '{tipo}' (ID: {item})", fg="#16A34A")
 
-    # Polígono (triángulo / diamante)
-    puntos_triangulo = [110, 180, 40, 270, 180, 270]
-    canvas.create_polygon(puntos_triangulo, fill="#FEF3C7", outline="#D97706", width=2)
-    canvas.create_text(110, 240, text="Polígono", font=("Segoe UI", 10), fill="#B45309")
+    def al_arrastrar(event):
+        if drag_data["item"]:
+            delta_x = event.x - drag_data["x"]
+            delta_y = event.y - drag_data["y"]
+            canvas.move(drag_data["item"], delta_x, delta_y)
+            drag_data["x"] = event.x
+            drag_data["y"] = event.y
 
-    # Óvalo / Círculo estático
-    canvas.create_oval(250, 50, 390, 150, fill="#FCE7F3", outline="#DB2777", width=2)
-    canvas.create_text(320, 100, text="Óvalo Elíptico", font=("Segoe UI", 10, "bold"), fill="#9D174D")
+    def al_soltar(event):
+        drag_data["item"] = None
+        lbl_info.config(text="🖐️ Arrastre finalizado. Puedes seleccionar cualquier otra figura.", fg="#2563EB")
 
-    # 2. Objeto interactivo: Círculo Arrastrable
-    # create_oval(x1, y1, x2, y2)
-    obj_arrastrable = canvas.create_oval(440, 70, 540, 170, fill="#34D399", outline="#059669", width=3, tags="movible")
-    texto_arrastrable = canvas.create_text(490, 120, text="¡Arrastra!", font=("Segoe UI", 10, "bold"), fill="#064E3B", tags="movible")
+    # Vinculamos los eventos de ratón para cualquier elemento arrastrable
+    canvas.tag_bind("arrastrable", "<ButtonPress-1>", al_hacer_click)
+    canvas.tag_bind("arrastrable", "<B1-Motion>", al_arrastrar)
+    canvas.tag_bind("arrastrable", "<ButtonRelease-1>", al_soltar)
 
-    # Variables de seguimiento de arrastre
-    estado_arrastre = {"x": 0, "y": 0}
+    # ==========================================
+    # CREACIÓN DE FIGURAS INICIALES (Todas arrastrables)
+    # ==========================================
+    def dibujar_figuras_iniciales():
+        canvas.delete("all")
 
-    def al_iniciar_arrastre(event):
-        estado_arrastre["x"] = event.x
-        estado_arrastre["y"] = event.y
+        # 1. Rectángulo azul
+        canvas.create_rectangle(40, 50, 180, 140, fill="#60A5FA", outline="#1D4ED8", width=3, tags="arrastrable")
 
-    def al_mover_objeto(event):
-        delta_x = event.x - estado_arrastre["x"]
-        delta_y = event.y - estado_arrastre["y"]
-        # Mover tanto el círculo como el texto asociado con el tag 'movible'
-        canvas.move("movible", delta_x, delta_y)
-        estado_arrastre["x"] = event.x
-        estado_arrastre["y"] = event.y
+        # 2. Triángulo amarillo
+        canvas.create_polygon([120, 180, 50, 290, 190, 290], fill="#FDE047", outline="#CA8A04", width=3, tags="arrastrable")
 
-    # Asociar eventos directamente al tag "movible"
-    canvas.tag_bind("movible", "<ButtonPress-1>", al_iniciar_arrastre)
-    canvas.tag_bind("movible", "<B1-Motion>", al_mover_objeto)
+        # 3. Óvalo rosa
+        canvas.create_oval(240, 60, 390, 160, fill="#F472B6", outline="#BE185D", width=3, tags="arrastrable")
 
-    # 3. Dibujo libre al hacer clic en el fondo
-    def dibujar_punto(event):
-        # Si no se hizo clic en un objeto existente, creamos una pequeña marca
-        radio = 6
+        # 4. Círculo verde con etiqueta
+        canvas.create_oval(450, 70, 560, 180, fill="#34D399", outline="#059669", width=3, tags="arrastrable")
+
+        # 5. Estrella / Polígono naranja de 5 puntas
+        puntos_estrella = [
+            300, 220, 320, 270, 370, 270, 330, 300,
+            350, 350, 300, 320, 250, 350, 270, 300,
+            230, 270, 280, 270
+        ]
+        canvas.create_polygon(puntos_estrella, fill="#FB923C", outline="#C2410C", width=2, tags="arrastrable")
+
+        # 6. Tarjeta de texto arrastrable
+        canvas.create_rectangle(430, 240, 610, 310, fill="#C7D2FE", outline="#4338CA", width=2, tags="arrastrable")
+        canvas.create_text(520, 275, text="¡Incluso este texto\nes arrastrable!", font=("Segoe UI", 10, "bold"), fill="#1E1B4B", tags="arrastrable")
+
+    dibujar_figuras_iniciales()
+
+    # Doble clic para añadir nuevas figuras en la posición del cursor
+    COLORES = ["#F87171", "#FB923C", "#FBBF24", "#34D399", "#60A5FA", "#A78BFA", "#F472B6"]
+
+    def al_doble_click(event):
+        color = random.choice(COLORES)
+        radio = random.randint(25, 45)
         canvas.create_oval(
             event.x - radio, event.y - radio,
             event.x + radio, event.y + radio,
-            fill="#6366F1", outline=""
+            fill=color, outline="#1E293B", width=2,
+            tags="arrastrable"
         )
+        lbl_info.config(text=f"✨ Círculo nuevo añadido en ({event.x}, {event.y}). ¡También lo puedes arrastrar!", fg="#7C3AED")
 
-    # Doble clic para estampar un punto en el lienzo
-    canvas.bind("<Double-Button-1>", dibujar_punto)
+    canvas.bind("<Double-Button-1>", al_doble_click)
 
     # Barra inferior de acciones
     frame_acciones = tk.Frame(root, bg="#F1F5F9")
     frame_acciones.pack(fill="x", padx=20, pady=8)
 
-    tk.Label(frame_acciones, text="💡 Tip: Haz doble clic en cualquier zona vacía para estampar puntos violetas.", font=("Segoe UI", 9), bg="#F1F5F9", fg="#475569").pack(side="left")
+    tk.Label(frame_acciones, text="💡 Tip: Haz doble clic en el lienzo para crear nuevas figuras.", font=("Segoe UI", 9), bg="#F1F5F9", fg="#475569").pack(side="left")
 
-    def reiniciar_lienzo():
-        canvas.coords(obj_arrastrable, 440, 70, 540, 170)
-        canvas.coords(texto_arrastrable, 490, 120)
-
-    btn_reset = tk.Button(frame_acciones, text="Restablecer Posición", bg="#E2E8F0", command=reiniciar_lienzo, cursor="hand2")
+    btn_reset = tk.Button(frame_acciones, text="🔄 Restablecer Lienzo", bg="#E2E8F0", command=dibujar_figuras_iniciales, cursor="hand2")
     btn_reset.pack(side="right")
 
     root.mainloop()

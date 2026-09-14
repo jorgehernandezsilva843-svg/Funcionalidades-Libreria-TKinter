@@ -134,11 +134,11 @@ Se abrirá una ventana que lista cada ejemplo con su descripción y un botón **
 ---
 
 ### `04_administradores_layout.py`
-- **Objetivo**: Dominar y comparar los 3 gestores de geometría de Tkinter.
+- **Objetivo**: Dominar y comparar de manera 100% interactiva los 3 gestores de geometría de Tkinter.
 - **Conceptos clave**:
-  - `pack()`: Posicionamiento en bloques secuenciales (`side="top"|"left"|"right"|"bottom"`, `fill="x"|"y"|"both"`, `expand=True`).
-  - `grid()`: Posicionamiento en cuadrícula tabular con filas (`row`), columnas (`column`), expansión (`columnspan`, `rowspan`) y anclaje elástico (`sticky="nsew"`).
-  - `place()`: Posicionamiento milimétrico absoluto (`x`, `y`) o porcentual relativo (`relx`, `rely`, `anchor="center"`).
+  - `pack()` interactivo: Botones para alternar en vivo entre orientación horizontal (`side="left"`) y vertical (`side="top"`).
+  - `grid()` interactivo: Botón para alternar en vivo la expansión de columnas (`columnspan=1` a `columnspan=2`) observando el reacomodo.
+  - `place()` interactivo: **Tarjeta arrastrable con el ratón** y controles deslizantes de coordenadas `X` e `Y` que reposicionan el elemento en tiempo real.
   - **Regla de oro**: Explicación de por qué nunca se deben mezclar `pack()` y `grid()` en el mismo contenedor padre.
 - **Ejecución**: `py 04_administradores_layout.py`
 
@@ -199,23 +199,25 @@ Se abrirá una ventana que lista cada ejemplo con su descripción y un botón **
 ---
 
 ### `10_menus_y_contextual.py`
-- **Objetivo**: Construir barras de menú tradicionales y menús contextuales.
+- **Objetivo**: Construir barras de menú tradicionales y menús contextuales conectados a **archivos reales del disco**.
 - **Conceptos clave**:
   - `tk.Menu(root)`: Creación de la barra superior configurada mediante `root.config(menu=barra)`.
-  - Cascadas y submenús: Jerarquías (`add_cascade`), separadores (`add_separator`) y comandos.
-  - Aceleradores de teclado: Mostrar atajos (ej. `Ctrl+N`, `Ctrl+S`) y asociarlos con `.bind("<Control-n>", ...)`.
-  - Menú contextual: Despliegue con clic derecho (`<Button-3>`) usando el método `.tk_popup(event.x_root, event.y_root)`.
+  - Conexión real con `filedialog`: **Archivo > Abrir...** (Ctrl+O) abre el explorador de Windows y lee el contenido en el editor.
+  - **Archivo > Guardar Como...** (Ctrl+S): Guarda el documento en el almacenamiento local.
+  - Atajos de teclado vinculados directamente (`<Control-o>`, `<Control-s>`, `<Control-n>`).
+  - Menú contextual (clic derecho) con Copiar, Cortar, Pegar y Limpiar.
 - **Ejecución**: `py 10_menus_y_contextual.py`
 
 ---
 
 ### `11_canvas_graficos.py`
-- **Objetivo**: Dibujar gráficos vectoriales en 2D e interactuar con ellos mediante el ratón.
+- **Objetivo**: Dibujar gráficos vectoriales en 2D y manipular libremente cualquier figura.
 - **Conceptos clave**:
   - `tk.Canvas()`: Creación de un lienzo de dibujo.
   - Primitivas gráficas: `create_line()`, `create_rectangle()`, `create_oval()`, `create_polygon()` y `create_text()`.
-  - Atributos visuales: `fill` (relleno), `outline` (borde exterior), `width` y punteado `dash`.
-  - **Drag and Drop interactivo**: Vinculación de eventos de arrastre (`<ButtonPress-1>` y `<B1-Motion>`) con `canvas.move()` para mover objetos libremente.
+  - **Manipulación e interactividad universal**: **TODAS** las figuras dibujadas (rectángulos, estrellas, círculos, textos) se pueden tocar y arrastrar por el lienzo con el mouse.
+  - `canvas.tag_raise()`: Trae automáticamente al frente la figura que se está manipulando.
+  - Doble clic interactivo para estampar nuevas figuras con colores aleatorios.
 - **Ejecución**: `py 11_canvas_graficos.py`
 
 ---
